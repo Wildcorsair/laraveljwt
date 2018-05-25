@@ -19,6 +19,13 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 
+Route::get('version', function() {
+    return json_encode([
+        'api' => 'GRIP Investments API',
+        'version' => 'v. 1.0'
+    ]);
+});
+
 Route::post('login', 'API\PassportController@login');
 Route::post('register', 'API\PassportController@register');
 
