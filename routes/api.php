@@ -30,5 +30,6 @@ Route::post('login', 'API\PassportController@login');
 Route::post('register', 'API\PassportController@register');
 
 Route::group(['middleware' => 'auth:api'], function() {
+    Route::post('verify', 'API\PassportController@verify');
     Route::post('get-details', 'API\PassportController@getDetails');
 });
