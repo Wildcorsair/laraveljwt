@@ -54,16 +54,6 @@ class PassportController extends Controller
         return response()->json(['success' => $success], $this->sucessStatus);
     }
 
-    /*
-     * details api
-     *
-     * @return \Illumiante\Http\Response
-     */
-     public function getDetails() {
-        $user = Auth::user();
-        return response()->json(['success' => $user], $this->sucessStatus);
-     }
-
      public function verify() {
         return response()->json(['success' => 'verified'], $this->sucessStatus);
      }

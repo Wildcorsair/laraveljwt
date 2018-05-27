@@ -28,8 +28,9 @@ Route::get('version', function() {
 
 Route::post('login', 'API\PassportController@login');
 Route::post('register', 'API\PassportController@register');
+Route::get('team', 'API\TeamController@index');
+Route::get('team/edit/{id}', 'API\TeamController@edit');
 
 Route::group(['middleware' => 'auth:api'], function() {
     Route::post('verify', 'API\PassportController@verify');
-    Route::post('get-details', 'API\PassportController@getDetails');
 });
