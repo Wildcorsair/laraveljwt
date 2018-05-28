@@ -33,4 +33,6 @@ Route::get('team/edit/{id}', 'API\TeamController@edit');
 
 Route::group(['middleware' => 'auth:api'], function() {
     Route::post('verify', 'API\PassportController@verify');
+    Route::post('team/create', 'API\TeamController@store');
+    Route::put('team/update/{id}', 'API\TeamController@update');
 });
