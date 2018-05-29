@@ -29,10 +29,11 @@ Route::get('version', function() {
 Route::post('login', 'API\PassportController@login');
 Route::post('register', 'API\PassportController@register');
 Route::get('team', 'API\TeamController@index');
-Route::get('team/edit/{id}', 'API\TeamController@edit');
+Route::get('team/{id}', 'API\TeamController@edit');
 
 Route::group(['middleware' => 'auth:api'], function() {
     Route::post('verify', 'API\PassportController@verify');
-    Route::post('team/create', 'API\TeamController@store');
-    Route::put('team/update/{id}', 'API\TeamController@update');
+    Route::post('team', 'API\TeamController@store');
+    Route::put('team/{id}', 'API\TeamController@update');
+    Route::delete('team/{id}', 'API\TeamController@destroy');
 });

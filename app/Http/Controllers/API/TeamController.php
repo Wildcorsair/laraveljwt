@@ -12,6 +12,7 @@ class TeamController extends Controller
 {
 
     public $sucessStatus = 200;
+    public $notFoundStatus = 404;
 
     public function index() {
         $team = Team::all();
@@ -19,8 +20,6 @@ class TeamController extends Controller
     }
 
     public function store(Request $request) {
-        Log::info($request);
-
         $this->validate($request, array(
             'firstName' => 'required|max:32',
             'lastName' => 'required|max:32',
@@ -59,7 +58,7 @@ class TeamController extends Controller
 
     public function update(Request $request, $id) {
         $member = Team::find($id);
-
+        Log::info($request);
         $this->validate($request, array(
             'firstName' => 'required|max:32',
             'lastName' => 'required|max:32',
@@ -72,14 +71,36 @@ class TeamController extends Controller
 
         $member->first_name = $request->get('firstName');
         $member->last_name = $request->get('lastName');
-        $member->photo = $request->get('photo');
         $member->team_category = $request->get('teamCategory');
         $member->team_position = $request->get('teamPosition');
         $member->linkedin = $request->get('linkedin');
         $member->facebook = $request->get('facebook');
         $member->twitter = $request->get('twitter');
+
+        if ($request->hasFile('photo')) {
+            $image = $request->file('photo');
+            $fileName = time() . '.' . $image->getClientOriginalExtension();
+            $location = public_path('images/' . $fileName);
+            Image::make($image)->resize(165, 165)->save($location);
+            $member->photo = $fileName;
+        } else if ($request->get('photo') == 'null') {
+            $member->photo = null;
+        }
+
         $member->save();
 
         return response()->json(['success' => 'updated', 'record' => $member], $this->sucessStatus);
+    }
+
+    public function destroy(Request $request, $id) {
+        $member = Team::find($id);
+
+        if (!is_null($member)) {
+            $member->delete();
+
+            return response()->json(['success' => 'deleted'], $this->sucessStatus);
+        }
+
+        return response()->json(['success' => 'error'], $this->notFoundStatus);
     }
 }
