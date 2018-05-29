@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Team;
 use Image;
+use Log;
 
 class TeamController extends Controller
 {
@@ -18,6 +19,8 @@ class TeamController extends Controller
     }
 
     public function store(Request $request) {
+        Log::info($request);
+
         $this->validate($request, array(
             'firstName' => 'required|max:32',
             'lastName' => 'required|max:32',
