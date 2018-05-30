@@ -58,7 +58,6 @@ class TeamController extends Controller
 
     public function update(Request $request, $id) {
         $member = Team::find($id);
-        Log::info($request);
         $this->validate($request, array(
             'firstName' => 'required|max:32',
             'lastName' => 'required|max:32',
