@@ -43,7 +43,7 @@ class TeamController extends Controller
             $image = $request->file('photo');
             $fileName = time() . '.' . $image->getClientOriginalExtension();
             $location = public_path('images/' . $fileName);
-            Image::make($image)->resize(165, 165)->save($location);
+            Image::make($image)->crop(165, 165)->save($location);
             $member->photo = $fileName;
         }
         $member->save();
@@ -80,7 +80,7 @@ class TeamController extends Controller
             $image = $request->file('photo');
             $fileName = time() . '.' . $image->getClientOriginalExtension();
             $location = public_path('images/' . $fileName);
-            Image::make($image)->resize(165, 165)->save($location);
+            Image::make($image)->crop(165, 165)->save($location);
             $member->photo = $fileName;
         } else if ($request->get('photo') == 'null') {
             $member->photo = null;
