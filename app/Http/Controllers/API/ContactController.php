@@ -15,7 +15,7 @@ class ContactController extends Controller
     public function index() {
         $contact = Page::where('page', 'contact')->first();
 
-        return response()->json(['success' => 'ok', 'dataset' => $contact], $this->sucessStatus);
+        return response()->json(['success' => 'ok', 'record' => $contact], $this->sucessStatus);
     }
 
     public function store(Request $request) {
