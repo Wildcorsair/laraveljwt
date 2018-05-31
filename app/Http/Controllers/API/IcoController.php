@@ -17,8 +17,7 @@ class IcoController extends Controller
         return response()->json(['success' => 'ok', 'record' => $ico], $this->sucessStatus);
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         $this->validate($request, array(
             'page' => 'required|max:20',
             'content' => 'required',

@@ -29,9 +29,11 @@ Route::get('version', function() {
 Route::post('login', 'API\PassportController@login');
 Route::post('register', 'API\PassportController@register');
 Route::get('team', 'API\TeamController@index');
-Route::get('team/{id}', 'API\TeamController@edit');
+Route::get('team/{id}', 'API\TeamController@edit')->where(['id' => '[0-9]+']);
 Route::get('contact', 'API\ContactController@index');
 Route::get('ico', 'API\IcoController@index');
+Route::get('team/content', 'API\TeamContentController@index');
+Route::get('home', 'API\HomeContentController@index');
 
 Route::group(['middleware' => 'auth:api'], function() {
 
@@ -42,6 +44,10 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::post('team', 'API\TeamController@store');
     Route::put('team/{id}', 'API\TeamController@update');
     Route::delete('team/{id}', 'API\TeamController@destroy');
+
+    Route::post('team/content', 'API\TeamContentController@store');
+    Route::put('team/content/{id}', 'API\TeamContentController@update');
+
 
     // Contact routes
     Route::post('contact', 'API\ContactController@store');
