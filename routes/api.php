@@ -40,14 +40,16 @@ Route::group(['middleware' => 'auth:api'], function() {
     // Verify access route
     Route::post('verify', 'API\PassportController@verify');
 
+    Route::post('home', 'API\HomeContentController@store');
+    Route::put('home/{id}', 'API\HomeContentController@update')->where(['id' => '[0-9]+']);
+
     // Team routes
     Route::post('team', 'API\TeamController@store');
     Route::put('team/{id}', 'API\TeamController@update');
     Route::delete('team/{id}', 'API\TeamController@destroy');
 
     Route::post('team/content', 'API\TeamContentController@store');
-    Route::put('team/content/{id}', 'API\TeamContentController@update');
-
+    Route::put('team/content/{id}', 'API\TeamContentController@update')->where(['id' => '[0-9]+']);
 
     // Contact routes
     Route::post('contact', 'API\ContactController@store');
