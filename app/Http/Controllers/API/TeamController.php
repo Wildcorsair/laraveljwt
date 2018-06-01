@@ -27,7 +27,9 @@ class TeamController extends Controller
             'teamPosition' => 'required',
             'linkedin' => 'max:254',
             'facebook' => 'max:254',
-            'twitter' => 'max:254'
+            'twitter' => 'max:254',
+            'github' => 'max:254',
+            'stackOverflow' => 'max:254'
         ));
 
         $member = new Team();
@@ -38,12 +40,15 @@ class TeamController extends Controller
         $member->linkedin = $request->get('linkedin');
         $member->facebook = $request->get('facebook');
         $member->twitter = $request->get('twitter');
+        $member->github = $request->get('github');
+        $member->stack_overflow = $request->get('stackOverflow');
+        $member->description = $request->get('description');
 
         if ($request->hasFile('photo')) {
             $image = $request->file('photo');
             $fileName = time() . '.' . $image->getClientOriginalExtension();
             $location = public_path('images/' . $fileName);
-            Image::make($image)->crop(165, 165)->save($location);
+            Image::make($image)->fit(165)->crop(165, 165)->save($location);
             $member->photo = $fileName;
         }
         $member->save();
@@ -65,7 +70,9 @@ class TeamController extends Controller
             'teamPosition' => 'required',
             'linkedin' => 'max:254',
             'facebook' => 'max:254',
-            'twitter' => 'max:254'
+            'twitter' => 'max:254',
+            'github' => 'max:254',
+            'stackOverflow' => 'max:254'
         ));
 
         $member->first_name = $request->get('firstName');
@@ -75,12 +82,15 @@ class TeamController extends Controller
         $member->linkedin = $request->get('linkedin');
         $member->facebook = $request->get('facebook');
         $member->twitter = $request->get('twitter');
+        $member->github = $request->get('github');
+        $member->stack_overflow = $request->get('stackOverflow');
+        $member->description = $request->get('description');
 
         if ($request->hasFile('photo')) {
             $image = $request->file('photo');
             $fileName = time() . '.' . $image->getClientOriginalExtension();
             $location = public_path('images/' . $fileName);
-            Image::make($image)->crop(165, 165)->save($location);
+            Image::make($image)->fit(165)->crop(165, 165)->save($location);
             $member->photo = $fileName;
         } else if ($request->get('photo') == 'null') {
             $member->photo = null;
