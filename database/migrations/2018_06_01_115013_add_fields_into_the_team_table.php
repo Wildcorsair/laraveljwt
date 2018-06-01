@@ -14,8 +14,8 @@ class AddFieldsIntoTheTeamTable extends Migration
     public function up()
     {
         Schema::table('team', function($table) {
-            $table->string('github')->nullable()->after('twitter');
-            $table->string('stack_overflow')->nullable()->after('github');
+            $table->string('github')->nullable()->default('')->after('twitter');
+            $table->string('stack_overflow')->nullable()->default('')->after('github');
             $table->text('description')->nullable()->after('stack_overflow');
         });
     }
