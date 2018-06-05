@@ -32,7 +32,6 @@ class HomeContentController extends Controller
 
         $content = json_encode(array(
             'pageTitle' => $request->get('title'),
-            'pageVideoUrl'  => $request->get('videoUrl'),
             'pageContent' => $request->get('content')
         ));
 
@@ -54,7 +53,6 @@ class HomeContentController extends Controller
 
         $content = json_encode(array(
             'pageTitle' => $request->get('title'),
-            'pageVideoUrl'  => $request->get('videoUrl'),
             'pageContent' => $request->get('content')
         ));
 
