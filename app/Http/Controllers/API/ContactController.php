@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Page;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
@@ -21,13 +22,21 @@ class ContactController extends Controller
     public function store(Request $request) {
         $this->validate($request, array(
             'page' => 'required|max:20',
-            'content' => 'required',
-            'status' => 'required|max: 20'
+            'title' => 'required|max:254',
+            'status' => 'required|max: 20',
+            'recipientEmail' => 'required|email'
         ));
+
+        $content = json_encode([
+          'title' => $request->get('title'),
+          'text' => $request->get('contactPageText'),
+          'code' => $request->get('mapURL'),
+          'recipientEmail' => $request->get('recipientEmail')
+        ]);
 
         $contact = new Page();
         $contact->page = $request->get('page');
-        $contact->content = $request->get('content');
+        $contact->content = $content;
         $contact->status = $request->get('status');
         $contact->save();
 
@@ -37,16 +46,40 @@ class ContactController extends Controller
     public function update(Request $request, $id) {
         $this->validate($request, array(
             'page' => 'required|max:20',
-            'content' => 'required',
-            'status' => 'required|max: 20'
+            'title' => 'required|max:254',
+            'status' => 'required|max: 20',
+            'recipientEmail' => 'required|email'
         ));
+
+        $content = json_encode([
+          'title' => $request->get('title'),
+          'text' => $request->get('contactPageText'),
+          'code' => $request->get('mapURL'),
+          'recipientEmail' => $request->get('recipientEmail'),
+        ]);
 
         $contact = Page::find($id);
         $contact->page = $request->get('page');
-        $contact->content = $request->get('content');
+        $contact->content = $content;
         $contact->status = $request->get('status');
         $contact->save();
 
         return response()->json(['success' => 'updated', 'record' => $contact], $this->sucessStatus);
+    }
+
+    public function sendMessage(Request $request) {
+      $contact = [
+        'username' => $request->get('name'),
+        'email' => $request->get('email'),
+        'residence' => $request->get('residence'),
+        'contactMessage' => $request->get('message'),
+        // 'profile' => $request->get('profile')
+      ];
+
+      Mail::send('emails.contact', $contact, function($message) {
+        $message->to('web.jungle.ua@gmail.com', 'support')->from('admin@grip.investments')->subject('New Contact Form Message');
+      });
+
+      return response()->json(['success' => 'ok', 'record' => $contact], $this->sucessStatus);
     }
 }

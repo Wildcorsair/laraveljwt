@@ -34,6 +34,7 @@ Route::get('contact', 'API\ContactController@index');
 Route::get('ico', 'API\IcoController@index');
 Route::get('team/content', 'API\TeamContentController@index');
 Route::get('home', 'API\HomeContentController@index');
+Route::post('contact/send', 'API\ContactController@sendMessage');
 
 Route::group(['middleware' => 'auth:api'], function() {
 
@@ -53,7 +54,7 @@ Route::group(['middleware' => 'auth:api'], function() {
 
     // Contact routes
     Route::post('contact', 'API\ContactController@store');
-    Route::put('contact/{id}', 'API\ContactController@update');
+    Route::put('contact/{id}', 'API\ContactController@update')->where(['id' => '[0-9]+']);
 
     // ICO routes
     Route::post('ico', 'API\IcoController@store');
