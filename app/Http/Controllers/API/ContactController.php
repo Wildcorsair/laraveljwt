@@ -77,7 +77,7 @@ class ContactController extends Controller
       ];
 
       Mail::send('emails.contact', $contact, function($message) {
-        $message->to('web.jungle.ua@gmail.com', 'support')->from('admin@grip.investments')->subject('New Contact Form Message');
+        $message->to('success@simulator.amazonses.com', 'support')->from('success@simulator.amazonses.com')->subject('New Contact Form Message');
       });
 
       return response()->json(['success' => 'ok', 'record' => $contact], $this->sucessStatus);
