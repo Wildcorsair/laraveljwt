@@ -96,15 +96,19 @@ class ContactController extends Controller
         'media'            => $contactMessage->media
       ];
 
-      Mail::send('emails.contact', (array) $mailMessage, function($message) {
-        $message->to('nic@grip.investments', 'hello')->from('admin@grip.investments')->subject('New Contact Form Message');
+      $contactPage = Page::where('page', 'contact')->first();
+      $contactPageContent = json_decode($contactPage->content);
+      $recipientMail = $contactPageContent->recipientEmail;
+
+      Mail::send('emails.contact', (array) $mailMessage, function($message) use($recipientMail) {
+        $message->to($recipientMail, 'Contacts')->from('admin@grip.investments')->subject('New Contact Form Message');
       });
 
       return response()->json(['success' => 'ok', 'record' => $contactMessage], $this->sucessStatus);
     }
 
     public function getContactMessages() {
-      $messages = ContactMessage::all();
+      $messages = ContactMessage::orderBy('created_at', 'DESC')->get();
       return response()->json(['success' => 'ok', 'dataset' => $messages], $this->sucessStatus);
     }
 
