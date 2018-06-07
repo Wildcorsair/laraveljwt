@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Page;
+use App\ContactMessage;
 use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
@@ -68,18 +69,51 @@ class ContactController extends Controller
     }
 
     public function sendMessage(Request $request) {
-      $contact = [
-        'username' => $request->get('name'),
-        'email' => $request->get('email'),
-        'residence' => $request->get('residence'),
-        'contactMessage' => $request->get('message'),
-        // 'profile' => $request->get('profile')
+
+      $contactMessage = new ContactMessage();
+      $contactMessage->name = $request->name;
+      $contactMessage->email = $request->email;
+      $contactMessage->residence = $request->residence;
+      $contactMessage->message = $request->message;
+      $contactMessage->seed_investor = $request->profile['seedInvestor'];
+      $contactMessage->service_provider = $request->profile['serviceProvider'];
+      $contactMessage->retail_investor = $request->profile['retailInvestor'];
+      $contactMessage->institutional = $request->profile['institutional'];
+      $contactMessage->government = $request->profile['government'];
+      $contactMessage->media = $request->profile['media'];
+      $contactMessage->save();
+
+      $mailMessage = [
+        'name'             => $contactMessage->name,
+        'email'            => $contactMessage->email,
+        'residence'        => $contactMessage->residence,
+        'text'             => $contactMessage->message,
+        'seed_investor'    => $contactMessage->seed_investor,
+        'service_provider' => $contactMessage->service_provider,
+        'retail_investor'  => $contactMessage->retail_investor,
+        'institutional'    => $contactMessage->institutional,
+        'government'       => $contactMessage->government,
+        'media'            => $contactMessage->media
       ];
 
-      Mail::send('emails.contact', $contact, function($message) {
-        $message->to('web.jungle.ua@gmail.com', 'support')->from('admin@grip.investments')->subject('New Contact Form Message');
+      Mail::send('emails.contact', (array) $mailMessage, function($message) {
+        $message->to('nic@grip.investments', 'hello')->from('admin@grip.investments')->subject('New Contact Form Message');
       });
 
-      return response()->json(['success' => 'ok', 'record' => $contact], $this->sucessStatus);
+      return response()->json(['success' => 'ok', 'record' => $contactMessage], $this->sucessStatus);
+    }
+
+    public function getContactMessages() {
+      $messages = ContactMessage::all();
+      return response()->json(['success' => 'ok', 'dataset' => $messages], $this->sucessStatus);
+    }
+
+    public function getContactMessage($id) {
+      $message = ContactMessage::find($id);
+      $message->status = true;
+      $message->save();
+
+      return response()->json(['success' => 'ok', 'record' => $message], $this->sucessStatus);
+
     }
 }
