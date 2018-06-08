@@ -106,7 +106,6 @@ class TeamController extends Controller
 
         if (!is_null($member)) {
             $member->delete();
-
             return response()->json(['success' => 'deleted'], $this->sucessStatus);
         }
 

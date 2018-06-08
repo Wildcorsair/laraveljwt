@@ -108,8 +108,8 @@ class ContactController extends Controller
     }
 
     public function getContactMessages() {
-      $messages = ContactMessage::orderBy('created_at', 'DESC')->get();
-      return response()->json(['success' => 'ok', 'dataset' => $messages], $this->sucessStatus);
+      $messages = ContactMessage::orderBy('created_at', 'DESC')->paginate(5);
+      return response()->json(['success' => 'ok', 'paginator' => $messages], $this->sucessStatus);
     }
 
     public function getContactMessage($id) {
@@ -119,5 +119,16 @@ class ContactController extends Controller
 
       return response()->json(['success' => 'ok', 'record' => $message], $this->sucessStatus);
 
+    }
+
+    public function deleteContactMessage($id) {
+      $message = ContactMessage::find($id);
+
+      if (!is_null($message)) {
+        $message->delete();
+        return response()->json(['success' => 'deleted'], $this->sucessStatus);
+      }
+
+      return response()->json(['success' => 'error'], $this->$notFoundStatus);
     }
 }
