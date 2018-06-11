@@ -57,6 +57,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::put('contact/{id}', 'API\ContactController@update')->where(['id' => '[0-9]+']);
     Route::get('contact/messages', 'API\ContactController@getContactMessages');
     Route::get('contact/messages/{id}', 'API\ContactController@getContactMessage')->where(['id' => '[0-9]+']);
+    Route::delete('contact/messages/{id}', 'API\ContactController@deleteContactMessage')->where(['id' => '[0-9]+']);
 
     // ICO routes
     Route::post('ico', 'API\IcoController@store');
