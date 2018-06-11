@@ -41,6 +41,12 @@ Route::group(['middleware' => 'auth:api'], function() {
     // Verify access route
     Route::post('verify', 'API\PassportController@verify');
 
+});
+
+Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
+
+    Route::get('permission', 'API\RoleController@store');
+
     Route::post('home', 'API\HomeContentController@store');
     Route::put('home/{id}', 'API\HomeContentController@update')->where(['id' => '[0-9]+']);
 
