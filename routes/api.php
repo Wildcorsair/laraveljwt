@@ -36,17 +36,16 @@ Route::get('team/content', 'API\TeamContentController@index');
 Route::get('home', 'API\HomeContentController@index');
 Route::post('contact/send', 'API\ContactController@sendMessage');
 
-Route::group(['middleware' => 'auth:api'], function() {
-
-    // Verify access route
-    Route::post('verify', 'API\PassportController@verify');
-
+Route::group(['middleware' => ['auth:api', 'role:customer']], function() {
+    // Verify access to client area
+    Route::post('authorization', 'API\PassportController@verify');
 });
 
 Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
+    // Verify access for administrator's dashboard
+    Route::post('verification', 'API\PassportController@verify');
 
     Route::get('permission', 'API\RoleController@store');
-
     Route::post('home', 'API\HomeContentController@store');
     Route::put('home/{id}', 'API\HomeContentController@update')->where(['id' => '[0-9]+']);
 

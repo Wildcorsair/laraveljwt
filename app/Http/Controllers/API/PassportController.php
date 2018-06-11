@@ -21,6 +21,7 @@ class PassportController extends Controller
         if(Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user = Auth::user();
             $success['token'] = $user->createToken('MyApp')->accessToken;
+            $success['name'] = $user->name;
             return response()->json(['success' => $success], $this->sucessStatus);
         }
         else {
@@ -54,8 +55,8 @@ class PassportController extends Controller
         return response()->json(['success' => $success], $this->sucessStatus);
     }
 
-     public function verify() {
+    public function verify() {
         return response()->json(['success' => 'verified'], $this->sucessStatus);
-     }
+    }
 
 }
