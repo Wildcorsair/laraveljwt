@@ -35,6 +35,7 @@ Route::get('ico', 'API\IcoController@index');
 Route::get('team/content', 'API\TeamContentController@index');
 Route::get('home', 'API\HomeContentController@index');
 Route::post('contact/send', 'API\ContactController@sendMessage');
+Route::get('activation', 'API\PassportController@activate');
 
 Route::group(['middleware' => ['auth:api', 'role:customer']], function() {
     // Verify access to client area
