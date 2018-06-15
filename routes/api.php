@@ -29,7 +29,6 @@ Route::get('version', function() {
 Route::post('login', 'API\PassportController@login');
 Route::post('register', 'API\PassportController@register');
 Route::get('team', 'API\TeamController@index');
-Route::get('team/{id}', 'API\TeamController@edit')->where(['id' => '[0-9]+']);
 Route::get('contact', 'API\ContactController@index');
 Route::get('ico', 'API\IcoController@index');
 Route::get('team/content', 'API\TeamContentController@index');
@@ -43,8 +42,10 @@ Route::group(['middleware' => ['auth:api', 'role:customer']], function() {
 });
 
 Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
-    // Verify access for administrator's dashboard
-    Route::post('verification', 'API\PassportController@verify');
+    Route::get('administrators', 'API\AdministratorController@index');
+    Route::post('administrators', 'API\AdministratorController@store');
+    Route::get('administrators/{id}', 'API\AdministratorController@edit')->where(['id' => '[0-9]+']);
+    Route::put('administrators/{id}', 'API\AdministratorController@update')->where(['id' => '[0-9]+']);
 
     Route::get('permission', 'API\RoleController@store');
     Route::post('home', 'API\HomeContentController@store');
@@ -52,6 +53,7 @@ Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
 
     // Team routes
     Route::post('team', 'API\TeamController@store');
+    Route::get('team/{id}', 'API\TeamController@edit')->where(['id' => '[0-9]+']);
     Route::put('team/{id}', 'API\TeamController@update');
     Route::delete('team/{id}', 'API\TeamController@destroy');
 
@@ -68,4 +70,7 @@ Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
     // ICO routes
     Route::post('ico', 'API\IcoController@store');
     Route::put('ico/{id}', 'API\IcoController@update');
+
+    // Verify access for administrator's dashboard
+    Route::post('verification', 'API\PassportController@verify');
 });

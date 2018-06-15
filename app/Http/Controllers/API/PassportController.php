@@ -10,12 +10,13 @@ use App\Services\SendMail;
 
 class PassportController extends Controller
 {
+    // 20*
     public $sucessStatus = 200;
-
+    // 40*
     public $badRequest = 400;
     public $unauthorized = 401;
     public $forbidden = 403;
-
+    // 50*
     public $unknownError = 520;
 
 
@@ -71,7 +72,7 @@ class PassportController extends Controller
         ]);
 
         if($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], $this->unauthorized);
+            return response()->json(['error' => $validator->errors()], $this->badRequest);
         }
 
         // $input = $request->all();
