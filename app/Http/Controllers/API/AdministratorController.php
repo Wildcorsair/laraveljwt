@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\User;
 
 class AdministratorController extends Controller
@@ -19,12 +20,20 @@ class AdministratorController extends Controller
     public $unknownError = 520;
 
     public function index() {
-        $administrators = User::where('type', 'administrator')->get();
-
-        return response()->json(['success' => 'ok', 'dataset' => $administrators], $this->sucessStatus);
+        $user = Auth::user();
+        if (!$user->can('administrator-read')) {
+            return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
+        }
+        $administrators = User::where('type', 'administrator')->paginate(5);
+        return response()->json(['success' => 'ok', 'paginator' => $administrators], $this->sucessStatus);
     }
 
     public function store(Request $request) {
+        $user = Auth::user();
+        if (!$user->can('administrator-create')) {
+            return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
+        }
+
         $this->validate($request, [
             'firstName' => 'required',
             'lastName' => 'required',
@@ -62,6 +71,10 @@ class AdministratorController extends Controller
     }
 
     public function edit($id) {
+        $user = Auth::user();
+        if (!$user->can('administrator-read')) {
+            return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
+        }
         $administrator = User::find($id);
         $administrator->permissions;
 
@@ -69,6 +82,10 @@ class AdministratorController extends Controller
     }
 
     public function update(Request $request, $id) {
+        $user = Auth::user();
+        if (!$user->can('administrator-update')) {
+            return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
+        }
         $this->validate($request, [
             'firstName' => 'required',
             'lastName' => 'required',
@@ -104,5 +121,16 @@ class AdministratorController extends Controller
         }
 
         return response()->json(['success' => 'updated', 'record' => $administrator], $this->sucessStatus);
+    }
+
+    public function destroy($id) {
+        $user = Auth::user();
+        if (!$user->can('administrator-delete')) {
+            return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
+        }
+        $administrator = User::find($id);
+        $administrator->delete();
+
+        return response()->json(['success' => 'deleted'], $this->sucessStatus);
     }
 }

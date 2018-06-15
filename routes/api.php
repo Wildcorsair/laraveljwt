@@ -42,10 +42,15 @@ Route::group(['middleware' => ['auth:api', 'role:customer']], function() {
 });
 
 Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
+    // Administrators routes
     Route::get('administrators', 'API\AdministratorController@index');
     Route::post('administrators', 'API\AdministratorController@store');
     Route::get('administrators/{id}', 'API\AdministratorController@edit')->where(['id' => '[0-9]+']);
     Route::put('administrators/{id}', 'API\AdministratorController@update')->where(['id' => '[0-9]+']);
+    Route::delete('administrators/{id}', 'API\AdministratorController@destroy')->where(['id' => '[0-9]+']);
+
+    // Customers routes
+    Route::get('customers', 'API\CustomerController@index');
 
     Route::get('permission', 'API\RoleController@store');
     Route::post('home', 'API\HomeContentController@store');
