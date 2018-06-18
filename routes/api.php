@@ -51,6 +51,9 @@ Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
 
     // Customers routes
     Route::get('customers', 'API\CustomerController@index');
+    Route::post('customers', 'API\CustomerController@store');
+    Route::get('customers/{id}', 'API\CustomerController@edit')->where(['id' => '[0-9]+']);
+    Route::put('customers/{id}', 'API\CustomerController@update')->where(['id' => '[0-9]+']);
 
     Route::get('permission', 'API\RoleController@store');
     Route::post('home', 'API\HomeContentController@store');
