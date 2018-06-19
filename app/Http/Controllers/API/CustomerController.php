@@ -22,14 +22,20 @@ class CustomerController extends Controller
 
     public function index() {
         $user = Auth::user();
-        if (!$user->can('administrator-read')) {
+        if (!$user->can('customer-read')) {
             return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
         }
+
         $customers = User::where('type', 'customer')->paginate(5);
         return response()->json(['success' => 'ok', 'paginator' => $customers], $this->sucessStatus);
     }
 
     public function store(Request $request) {
+        $user = Auth::user();
+        if (!$user->can('customer-create')) {
+            return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
+        }
+
         $validator = Validator::make($request->all(),[
             'firstName' => 'required',
             'lastName' => 'required',
@@ -85,6 +91,11 @@ class CustomerController extends Controller
     }
 
     public function edit($id) {
+        $user = Auth::user();
+        if (!$user->can('customer-read')) {
+            return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
+        }
+
         $customer = User::find($id);
         $customer->permissions;
 
@@ -92,6 +103,11 @@ class CustomerController extends Controller
     }
 
     public function update(Request $request, $id) {
+        $user = Auth::user();
+        if (!$user->can('customer-update')) {
+            return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
+        }
+
         $validator = Validator::make($request->all(),[
             'firstName' => 'required',
             'lastName' => 'required',
@@ -144,5 +160,16 @@ class CustomerController extends Controller
         }
 
         return response()->json(['success' => 'updated', 'record' => $customer], $this->sucessStatus);
+    }
+
+    public function destroy($id) {
+        $user = Auth::user();
+        if (!$user->can('customer-delete')) {
+            return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
+        }
+        $customer = User::find($id);
+        $customer->delete();
+
+        return response()->json(['success' => 'deleted'], $this->sucessStatus);
     }
 }

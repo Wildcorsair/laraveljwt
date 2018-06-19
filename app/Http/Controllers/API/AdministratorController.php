@@ -24,6 +24,7 @@ class AdministratorController extends Controller
         if (!$user->can('administrator-read')) {
             return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
         }
+
         $administrators = User::where('type', 'administrator')->paginate(5);
         return response()->json(['success' => 'ok', 'paginator' => $administrators], $this->sucessStatus);
     }
@@ -75,6 +76,7 @@ class AdministratorController extends Controller
         if (!$user->can('administrator-read')) {
             return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
         }
+
         $administrator = User::find($id);
         $administrator->permissions;
 
