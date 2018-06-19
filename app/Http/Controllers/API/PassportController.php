@@ -39,6 +39,7 @@ class PassportController extends Controller
             if ($user->is_active == true) {
                 $success['token'] = $user->createToken('MyApp')->accessToken;
                 $success['name'] = $user->name;
+                $success['type'] = $user->type;
                 return response()->json(['success' => $success], $this->sucessStatus);
             } else {
                 return response()->json(['error' => 'Non-activated'], $this->forbidden);
