@@ -92,6 +92,7 @@ class PassportController extends Controller
         $user->postal_code = $request->get('postalCode');
         $user->investor_type = $request->get('investorType');
         $user->tokens_count = $request->get('tokensCount');
+        $user->type = 'customer';
         $user->remember_token = str_random(32);
         $user->save();
 
