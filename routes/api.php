@@ -39,6 +39,7 @@ Route::get('activation', 'API\PassportController@activate');
 Route::group(['middleware' => ['auth:api', 'role:customer']], function() {
     // Verify access to client area
     Route::post('authorization', 'API\PassportController@verify');
+    Route::get('profile', 'API\ProfileController@index');
 });
 
 Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
