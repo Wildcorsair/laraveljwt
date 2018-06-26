@@ -40,6 +40,7 @@ Route::group(['middleware' => ['auth:api', 'role:customer']], function() {
     // Verify access to client area
     Route::post('authorization', 'API\PassportController@verify');
     Route::get('profile', 'API\ProfileController@index');
+    Route::put('profile/{id}', 'API\ProfileController@update')->where(['id' => '[0-9]+']);
 });
 
 Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
