@@ -36,11 +36,12 @@ class ProfileController extends Controller
             ]);
 
             if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()], $this->badRequest);
+                return response()->json(['success' => 'error', 'message' => $validator->errors()], $this->badRequest);
             }
 
             $customer->name = $request->get('firstName') . ' ' . $request->get('lastName');
             $customer->phone = $request->get('phone');
+            $customer->investor_type = $request->get('investorType')['investor'];
             $customer->save();
         }
 
@@ -52,7 +53,7 @@ class ProfileController extends Controller
             ]);
 
             if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()], $this->badRequest);
+                return response()->json(['success' => 'error', 'message' => 'Password and Password Confirm are not match.'], $this->badRequest);
             }
 
             if (!Hash::check($request->get('oldPassword'), $customer->password)) {
@@ -89,7 +90,7 @@ class ProfileController extends Controller
             ]);
 
             if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()], $this->badRequest);
+                return response()->json(['success' => 'error', 'message' => $validator->errors()], $this->badRequest);
             }
 
             $customer->country = $request->get('country');
