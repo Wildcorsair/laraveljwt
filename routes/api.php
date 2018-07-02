@@ -44,6 +44,15 @@ Route::group(['middleware' => ['auth:api', 'role:customer']], function() {
 });
 
 Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
+    // Verify access for administrator's dashboard
+    Route::post('verification', 'API\PassportController@verify');
+
+    // Trading Blocks routes
+    Route::get('trading-blocks', 'API\TradingBlockController@index');
+
+    // Sectors routes
+    Route::get('sectors', 'API\SectorController@index');
+
     // Administrators routes
     Route::get('administrators', 'API\AdministratorController@index');
     Route::post('administrators', 'API\AdministratorController@store');
@@ -81,7 +90,4 @@ Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
     // ICO routes
     Route::post('ico', 'API\IcoController@store');
     Route::put('ico/{id}', 'API\IcoController@update');
-
-    // Verify access for administrator's dashboard
-    Route::post('verification', 'API\PassportController@verify');
 });
