@@ -53,6 +53,17 @@ Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
     // Sectors routes
     Route::get('sectors', 'API\SectorController@index');
 
+    // Countries routes
+    Route::get('countries', 'API\CountryController@index');
+
+
+    // Assets routes
+    Route::get('assets', 'API\AssetController@index');
+    Route::post('assets', 'API\AssetController@store');
+    Route::get('assets/{id}', 'API\AssetController@edit')->where(['id' => '[0-9]+']);
+    Route::put('assets/{id}', 'API\AssetController@update')->where(['id' => '[0-9]+']);
+    Route::delete('assets/{id}', 'API\AssetController@destroy')->where(['id' => '[0-9]+']);
+
     // Administrators routes
     Route::get('administrators', 'API\AdministratorController@index');
     Route::post('administrators', 'API\AdministratorController@store');
