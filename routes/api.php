@@ -56,6 +56,9 @@ Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
     // Countries routes
     Route::get('countries', 'API\CountryController@index');
 
+    // Types routes
+    Route::get('types', 'API\TypeController@index');
+
 
     // Assets routes
     Route::get('assets', 'API\AssetController@index');

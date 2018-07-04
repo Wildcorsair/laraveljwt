@@ -32,4 +32,8 @@ class Asset extends Model
     public function trading_block() {
         return $this->belongsTo('App\TradingBlock');
     }
+
+    public function type() {
+        return $this->belongsTo('App\Type');
+    }
 }

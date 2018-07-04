@@ -3,7 +3,12 @@
 namespace App\Http\Controllers\API;
 
 use App\Asset;
+use App\Type;
+use App\Sector;
+use App\TradingBlock;
+use App\Country;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 
 class AssetController extends Controller
@@ -11,11 +16,19 @@ class AssetController extends Controller
     /**
      * Return list of assets.
      */
-    public function index() {
-        $assets = Asset::where('type', 'EQUITIES')
+    public function index(Request $request) {
+        $user = Auth::user();
+        if (!$user->can('asset-read')) {
+            return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
+        }
+
+        $type = $request->query('type');
+
+        $assets = Asset::where('type_id', $type)
             ->with('country')
             ->with('sector')
             ->with('trading_block')
+            ->with('type')
             ->paginate(5);
         return response()->json(['success' => 'ok', 'paginator' => $assets], $this->sucessStatus);
     }
@@ -27,13 +40,13 @@ class AssetController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request) {
-/*        $user = Auth::user();
+        $user = Auth::user();
         if (!$user->can('asset-create')) {
             return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
-        }*/
+        }
 
         $this->validate($request, [
-            'type' => 'required',
+            'typeId' => 'required',
             'name' => 'required',
             'holding' => 'required',
             'marketValue' => 'required',
@@ -43,28 +56,43 @@ class AssetController extends Controller
             'countryId' => 'required'
         ]);
 
+        $type = Type::find($request->get('typeId'));
+        $sector = Sector::find($request->get('sectorId'));
+        $tradingBlock = TradingBlock::find($request->get('tradingBlockId'));
+        $country = Country::find($request->get('countryId'));
+
         $asset = new Asset();
-        $asset->type = $request->get('type');
         $asset->name = $request->get('name');
         $asset->holding = $request->get('holding');
         $asset->market_value = $request->get('marketValue');
         $asset->profit = $request->get('profit');
-        $asset->sector_id = $request->get('sectorId');
-        $asset->trading_block_id = $request->get('tradingBlockId');
-        $asset->country_id = $request->get('countryId');
+
+        $asset->type()->associate($type);
+        $asset->sector()->associate($sector);
+        $asset->trading_block()->associate($tradingBlock);
+        $asset->country()->associate($country);
         $asset->save();
 
         return response()->json(['success' => 'created', 'record' => $asset], $this->sucessStatus);
     }
 
     public function edit($id) {
+        $user = Auth::user();
+        if (!$user->can('asset-read')) {
+            return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
+        }
         $asset = Asset::find($id);
         return response()->json(['success' => 'ok', 'record' => $asset], $this->sucessStatus);
     }
 
     public function update(Request $request, $id) {
+        $user = Auth::user();
+        if (!$user->can('asset-update')) {
+            return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
+        }
+
         $this->validate($request, [
-            'type' => 'required',
+            'typeId' => 'required',
             'name' => 'required',
             'holding' => 'required',
             'marketValue' => 'required',
@@ -74,25 +102,31 @@ class AssetController extends Controller
             'countryId' => 'required'
         ]);
 
+        $type = Type::find($request->get('typeId'));
+        $sector = Sector::find($request->get('sectorId'));
+        $tradingBlock = TradingBlock::find($request->get('tradingBlockId'));
+        $country = Country::find($request->get('countryId'));
+
         $asset = Asset::find($id);
-        $asset->type = $request->get('type');
         $asset->name = $request->get('name');
         $asset->holding = $request->get('holding');
         $asset->market_value = $request->get('marketValue');
         $asset->profit = $request->get('profit');
-        $asset->sector_id = $request->get('sectorId');
-        $asset->trading_block_id = $request->get('tradingBlockId');
-        $asset->country_id = $request->get('countryId');
+
+        $asset->type()->associate($type);
+        $asset->sector()->associate($sector);
+        $asset->trading_block()->associate($tradingBlock);
+        $asset->country()->associate($country);
         $asset->save();
 
         return response()->json(['success' => 'updated', 'record' => $asset], $this->sucessStatus);
     }
 
     public function destroy($id) {
-/*        $user = Auth::user();
-        if (!$user->can('administrator-delete')) {
+        $user = Auth::user();
+        if (!$user->can('asset-delete')) {
             return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
-        }*/
+        }
         $equity = Asset::find($id);
         $equity->delete();
 
