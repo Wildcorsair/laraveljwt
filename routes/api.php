@@ -41,6 +41,8 @@ Route::group(['middleware' => ['auth:api', 'role:customer']], function() {
     Route::post('authorization', 'API\PassportController@verify');
     Route::get('profile', 'API\ProfileController@index');
     Route::put('profile/{id}', 'API\ProfileController@update')->where(['id' => '[0-9]+']);
+
+    Route::get('common-statistics', 'API\StatisticController@calculateCommonRates');
 });
 
 Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
@@ -88,8 +90,8 @@ Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
     // Team routes
     Route::post('team', 'API\TeamController@store');
     Route::get('team/{id}', 'API\TeamController@edit')->where(['id' => '[0-9]+']);
-    Route::put('team/{id}', 'API\TeamController@update');
-    Route::delete('team/{id}', 'API\TeamController@destroy');
+    Route::put('team/{id}', 'API\TeamController@update')->where(['id' => '[0-9]+']);
+    Route::delete('team/{id}', 'API\TeamController@destroy')->where(['id' => '[0-9]+']);
 
     Route::post('team/content', 'API\TeamContentController@store');
     Route::put('team/content/{id}', 'API\TeamContentController@update')->where(['id' => '[0-9]+']);
