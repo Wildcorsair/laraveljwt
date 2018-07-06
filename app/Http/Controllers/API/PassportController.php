@@ -10,14 +10,14 @@ use App\Services\SendMail;
 
 class PassportController extends Controller
 {
-    // 20*
-    public $sucessStatus = 200;
-    // 40*
-    public $badRequest = 400;
-    public $unauthorized = 401;
-    public $forbidden = 403;
-    // 50*
-    public $unknownError = 520;
+    // // 20*
+    // public $sucessStatus = 200;
+    // // 40*
+    // public $badRequest = 400;
+    // public $unauthorized = 401;
+    // public $forbidden = 403;
+    // // 50*
+    // public $unknownError = 520;
 
 
     protected $mailer;
@@ -114,6 +114,25 @@ class PassportController extends Controller
         $success['name'] = $user->name;
 
         return response()->json(['success' => 'ok', 'record' => $success], $this->sucessStatus);
+    }
+
+    /**
+     * User token verification.
+     */
+    public function permit(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'permission' => 'required'
+        ]);
+
+        if($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], $this->badRequest);
+        }
+
+        $user = Auth::user();
+        if ($user->can($request->permission)) {
+            return response()->json(['success' => 'verified', 'user' => $user->name], $this->sucessStatus);
+        }
+        return response()->json(['error' => 'Unauthorised'], $this->unauthorized);
     }
 
     /**

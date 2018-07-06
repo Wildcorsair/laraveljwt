@@ -39,10 +39,13 @@ Route::get('activation', 'API\PassportController@activate');
 Route::group(['middleware' => ['auth:api', 'role:customer']], function() {
     // Verify access to client area
     Route::post('authorization', 'API\PassportController@verify');
+    // Permit access to the resource
+    Route::post('permit', 'API\PassportController@permit');
     Route::get('profile', 'API\ProfileController@index');
     Route::put('profile/{id}', 'API\ProfileController@update')->where(['id' => '[0-9]+']);
 
-    Route::get('common-statistics', 'API\StatisticController@calculateCommonRates');
+    Route::get('common-statistic', 'API\StatisticController@calculateCommonRates');
+    Route::get('dashboard-statistic', 'API\StatisticController@calculateAssetsGroupCommonValues');
 });
 
 Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
