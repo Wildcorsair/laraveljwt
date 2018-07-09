@@ -35,6 +35,7 @@ Route::get('team/content', 'API\TeamContentController@index');
 Route::get('home', 'API\HomeContentController@index');
 Route::post('contact/send', 'API\ContactController@sendMessage');
 Route::get('activation', 'API\PassportController@activate');
+Route::get('import-csv', 'API\CSVImportController@importCSV');
 
 Route::group(['middleware' => ['auth:api', 'role:customer']], function() {
     // Verify access to client area
@@ -45,7 +46,7 @@ Route::group(['middleware' => ['auth:api', 'role:customer']], function() {
     Route::put('profile/{id}', 'API\ProfileController@update')->where(['id' => '[0-9]+']);
 
     Route::get('common-statistic', 'API\StatisticController@calculateCommonRates');
-    Route::get('dashboard-statistic', 'API\StatisticController@calculateAssetsGroupCommonValues');
+    Route::get('dashboard-statistic', 'API\StatisticController@getDashboardStatistic');
 });
 
 Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
