@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Price;
 
 class StatisticController extends Controller
 {
@@ -111,6 +112,16 @@ class StatisticController extends Controller
             ->get();
 
         return $percents;
+    }
+
+    public function getPricesStatistic(Request $request) {
+        $startDate = date("Y-m-d", strtotime($request->start));
+        $endDate = date("Y-m-d", strtotime($request->end));
+
+        $prices = Price::where('grip_date', '>=', $startDate)->where('grip_date', '<=', $endDate)->get();
+        // $prices = Price::where('grip_date', '>=', '2019-04-01')->where('grip_date', '<=', '2019-04-10')->get();
+
+        return response()->json(['success' => 'ok', 'dataset' => $prices], $this->sucessStatus);
     }
 
     public function getDashboardStatistic() {

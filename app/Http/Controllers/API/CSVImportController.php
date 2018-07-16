@@ -9,6 +9,7 @@ use App\StatisticDaily;
 use App\StatisticWeekly;
 use App\StatisticMonthly;
 use App\StatisticQuarterly;
+use App\Price;
 
 class CSVImportController extends Controller
 {
@@ -122,11 +123,33 @@ class CSVImportController extends Controller
         }
     }
 
+
+    public function loadDataFromCSV() {
+        $fileName = '/home/developer/www/api-grip-investments/stats.csv';
+        if (!file_exists($fileName)) {
+            echo "No file '{$fileName}' was found!";
+        }
+
+        if (($handle = fopen($fileName, 'r')) !== false) {
+            while (($data = fgetcsv($handle, 1000, ' ')) !== false) {
+                $record = new Price();
+                $record->grip_date = date("Y-m-d H:i:s", strtotime($data[0]));
+                $record->price = $data[1];
+                $record->volume = $data[2];
+                $record->save();
+            }
+
+            fclose($handle);
+            echo "Import was successfully completed!";
+        }
+    }
+
     public function importCSV() {
         // $this->loadHourlyDataFromCSV();
         // $this->loadDailyDataFromCSV();
-        $this->loadWeeklyDataFromCSV();
-        $this->loadMonthlyDataFromCSV();
-        $this->loadQuarterlyDataFromCSV();
+        // $this->loadWeeklyDataFromCSV();
+        // $this->loadMonthlyDataFromCSV();
+        // $this->loadQuarterlyDataFromCSV();
+        $this->loadDataFromCSV();
     }
 }
