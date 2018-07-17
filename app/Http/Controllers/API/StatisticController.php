@@ -118,8 +118,37 @@ class StatisticController extends Controller
         $startDate = date("Y-m-d", strtotime($request->start));
         $endDate = date("Y-m-d", strtotime($request->end));
 
-        $prices = Price::where('grip_date', '>=', $startDate)->where('grip_date', '<=', $endDate)->get();
-        // $prices = Price::where('grip_date', '>=', '2019-04-01')->where('grip_date', '<=', '2019-04-10')->get();
+        $prices = Price::where('grip_date', '>=', $startDate)
+            ->where('grip_date', '<', $endDate)
+            ->get();
+
+        if ($request->period !== '') {
+            $i = 1;
+            if ($request->period == 'Quarterly') {
+                while ($i < count($prices)) {
+                    $result[] = $prices[$i];
+                    $i = $i + 3;
+                }
+                $prices = $result;
+            } else if ($request->period == 'Yearly') {
+                while ($i < count($prices)) {
+                    $result[] = $prices[$i];
+                    $i = $i + 12;
+                }
+                $prices = $result;
+            } else if ($request->period == 'Lifetime') {
+                while ($i < count($prices)) {
+                    $result[] = $prices[$i];
+                    $i = $i + 61;
+                }
+                $prices = $result;
+            }
+        }
+
+        // $prices = DB::table('prices')->select(DB::raw('grip_date, SUM(`price`) AS `price`, SUM(`volume`) AS `volume`'))->where('grip_date', '>=', $startDate)
+        //     ->where('grip_date', '<', $endDate)
+        //     ->groupBy('grip_date')
+        //     ->get();
 
         return response()->json(['success' => 'ok', 'dataset' => $prices], $this->sucessStatus);
     }
