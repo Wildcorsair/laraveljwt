@@ -48,6 +48,7 @@ Route::group(['middleware' => ['auth:api', 'role:customer']], function() {
     Route::get('common-statistic', 'API\StatisticController@calculateCommonRates');
     Route::get('dashboard-statistic', 'API\StatisticController@getDashboardStatistic');
     Route::get('prices', 'API\StatisticController@getPricesStatistic');
+    Route::get('assets-statistic', 'API\StatisticController@getAssetClassStats');
 });
 
 Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {

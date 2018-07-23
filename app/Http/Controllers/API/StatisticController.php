@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Price;
+use App\Type;
 
 class StatisticController extends Controller
 {
@@ -175,5 +176,35 @@ class StatisticController extends Controller
                 'geographical_exposure_sector' => $percentsBySectors
             ]
         ], $this->sucessStatus);
+    }
+
+    public function getAssetClassStats(Request $request) {
+        if (!$request->type) {
+            return false;
+        }
+
+        $typeId = (int)$request->type;
+
+        $assetClass = Type::find($typeId);
+
+        $holdings = DB::table('assets')->sum('holding');
+
+        $assets = DB::table('assets')
+            ->leftJoin('sectors', 'assets.sector_id', '=', 'sectors.id')
+            ->leftJoin('countries', 'assets.country_id', '=', 'countries.id')
+            ->select(DB::raw('assets.name, countries.code AS code, sectors.name AS sector, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
+            ->where('type_id', $typeId)
+            ->groupBy('countries.code', 'sectors.name', 'assets.name')
+            ->get();
+
+
+        $common = DB::table('assets')
+            // ->leftJoin('sectors', 'assets.sector_id', '=', 'sectors.id')
+            // ->leftJoin('countries', 'assets.country_id', '=', 'countries.id')
+            ->select(DB::raw('COUNT(assets.country_id) AS country_count, COUNT(assets.sector_id) AS sector_count, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
+            ->where('type_id', $typeId)
+            ->first();
+
+        return response()->json(['success' => 'ok', 'dataset' => ['type' => $assetClass, 'data' => $assets, 'common' => $common]], $this->sucessStatus);
     }
 }
