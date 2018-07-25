@@ -11,6 +11,11 @@ use App\Type;
 
 class StatisticController extends Controller
 {
+    public function calculateHoldings() {
+        $holdings = DB::table('assets')->sum('holding');
+        return $holdings;
+    }
+
     public function calculateCommonRates() {
         $holdings = DB::table('assets')->sum('holding');
         $marketPrice = env('MARKET_PRICE');
@@ -53,6 +58,17 @@ class StatisticController extends Controller
         $holdings = DB::table('assets')
             ->leftJoin('types', 'assets.type_id', '=', 'types.id')
             ->select(DB::raw("types.name, type_id, round((sum(`holding`) * {$marketPrice}) / 10000, 2) as value"))
+            ->groupBy('types.name', 'type_id')
+            ->orderBy('assets.type_id')
+            ->get();
+
+        return $holdings;
+    }
+
+    public function calculateAssetsGroupCommonValuesAll() {
+        $holdings = DB::table('assets')
+            ->leftJoin('types', 'assets.type_id', '=', 'types.id')
+            ->select(DB::raw("types.name, type_id, round((sum(`holding`)), 2) as value"))
             ->groupBy('types.name', 'type_id')
             ->orderBy('assets.type_id')
             ->get();
@@ -154,7 +170,23 @@ class StatisticController extends Controller
         return response()->json(['success' => 'ok', 'dataset' => $prices], $this->sucessStatus);
     }
 
+    public function getPricesForMonthBegin() {
+        // $currentMonth = date('Y-m') . '-01';
+        $currentMonth = date('Y-m-d', strtotime("first day of this month"));
+        $dates[] = $currentMonth;
+
+        for ($i = 1; $i < 6; $i++) {
+            $dates[] = date('Y-m-01', strtotime("-{$i} month"));
+        }
+
+        $prices = Price::whereIn('grip_date', $dates)->get();
+
+        return $prices;
+    }
+
     public function getDashboardStatistic() {
+
+        $holdingsCirculation = $this->calculateHoldings();
         // Calculate stats for 'ASSET CLASS' (Chart #1)
         $holdings = $this->calculateAssetsGroupCommonValues();
         // Calculate stats for 'ASSET CLASS' by customer (Chart #1)
@@ -166,14 +198,48 @@ class StatisticController extends Controller
         // Calculate stats for 'ECONOMIC SECTOR WIDE PORTFOLIO EXPOSURE' (Graph3)
         $percentsBySectors = $this->calculatePortfolioYieldsBySectors();
 
+        $monthPrices = $this->getPricesForMonthBegin();
+
         return response()->json([
             'success' => 'ok',
             'dataset' => [
+                'holdings' => $holdingsCirculation,
                 'asset_class' => $holdings,
                 'asset_class_user' => $holdingByUser,
                 'geographical_exposure' => $percentsByCountries,
                 'asset_class_yields' => $percentsByAssets,
-                'geographical_exposure_sector' => $percentsBySectors
+                'geographical_exposure_sector' => $percentsBySectors,
+                'month_prices' => $monthPrices
+            ]
+        ], $this->sucessStatus);
+    }
+
+    public function getDashboardCommonStatistic() {
+
+        $holdingsCirculation = $this->calculateHoldings();
+        // Calculate stats for 'ASSET CLASS' (Chart #1)
+        $holdings = $this->calculateAssetsGroupCommonValues();
+        // Calculate stats for 'ASSET CLASS' by customer (Chart #1)
+        $holdingByUser = $this->calculateAssetsGroupCommonValuesAll();
+        // Calculate stats for 'GEOGRAPHICAL EXPOSURE' data (Graph #1)
+        $percentsByCountries = $this->calculatePortfolioYieldsByCountries();
+        // Calculate stats for 'ASSET CLASS YIELDS (% P.A.)' data (Graph #2)
+        $percentsByAssets = $this->calculatePortfolioYieldsByAssets();
+        // Calculate stats for 'ECONOMIC SECTOR WIDE PORTFOLIO EXPOSURE' (Graph3)
+        $percentsBySectors = $this->calculatePortfolioYieldsBySectors();
+
+        $monthPrices = $this->getPricesForMonthBegin();
+
+        return response()->json([
+            'success' => 'ok',
+            'dataset' => [
+                'holdings' => $holdingsCirculation,
+                'asset_class' => $holdings,
+                'asset_class_user' => $holdingByUser,
+                'geographical_exposure' => $percentsByCountries,
+                'asset_class_yields' => $percentsByAssets,
+                'geographical_exposure_sector' => $percentsBySectors,
+                'month_prices' => $monthPrices
             ]
         ], $this->sucessStatus);
     }

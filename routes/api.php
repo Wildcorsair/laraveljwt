@@ -36,6 +36,11 @@ Route::get('home', 'API\HomeContentController@index');
 Route::post('contact/send', 'API\ContactController@sendMessage');
 Route::get('activation', 'API\PassportController@activate');
 Route::get('import-csv', 'API\CSVImportController@importCSV');
+Route::get('dashboard-common-statistic', 'API\StatisticController@getDashboardCommonStatistic');
+
+// Common statistic routes
+Route::get('prices', 'API\StatisticController@getPricesStatistic');
+Route::get('common-statistic', 'API\StatisticController@calculateCommonRates');
 
 Route::group(['middleware' => ['auth:api', 'role:customer']], function() {
     // Verify access to client area
@@ -44,10 +49,8 @@ Route::group(['middleware' => ['auth:api', 'role:customer']], function() {
     Route::post('permit', 'API\PassportController@permit');
     Route::get('profile', 'API\ProfileController@index');
     Route::put('profile/{id}', 'API\ProfileController@update')->where(['id' => '[0-9]+']);
-
-    Route::get('common-statistic', 'API\StatisticController@calculateCommonRates');
+    // Statistic routes
     Route::get('dashboard-statistic', 'API\StatisticController@getDashboardStatistic');
-    Route::get('prices', 'API\StatisticController@getPricesStatistic');
     Route::get('assets-statistic', 'API\StatisticController@getAssetClassStats');
 });
 

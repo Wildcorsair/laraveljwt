@@ -40,6 +40,7 @@ class PassportController extends Controller
                 $success['token'] = $user->createToken('MyApp')->accessToken;
                 $success['name'] = $user->name;
                 $success['type'] = $user->type;
+                $success['investor_id'] = $user->investor_id;
                 return response()->json(['success' => $success], $this->sucessStatus);
             } else {
                 return response()->json(['error' => 'Non-activated'], $this->forbidden);
@@ -85,6 +86,7 @@ class PassportController extends Controller
         $user->email = $request->get('email');
         $user->password = bcrypt($request->get('password'));
         $user->country = $request->get('country');
+        $user->investor_id = $this->generateInvestorId(20);
         $user->phone = $request->get('phone');
         $user->address1 = $request->get('address1');
         $user->address2 = $request->get('address2');
@@ -161,6 +163,17 @@ class PassportController extends Controller
         }
 
         return response()->json(['success' => 'error'], $this->unknownError);
+    }
+
+    public function generateInvestorId($length = 12) {
+    	$str = "";
+    	$characters = array_merge(range('A','Z'), range('a','z'), range('0','9'));
+    	$max = count($characters) - 1;
+    	for ($i = 0; $i < $length; $i++) {
+    		$rand = mt_rand(0, $max);
+    		$str .= $characters[$rand];
+    	}
+    	return $str;
     }
 
 }
