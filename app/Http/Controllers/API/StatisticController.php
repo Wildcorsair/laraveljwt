@@ -110,9 +110,11 @@ class StatisticController extends Controller
     public function calculatePortfolioYieldsByAssets() {
         $holdings = DB::table('assets')->sum('holding');
 
+        // Field set: "name", "item_id", "value"
+        // Using in the "horizontal" chart
         $percents = DB::table('assets')
             ->leftJoin('types', 'assets.type_id', '=', 'types.id')
-            ->select(DB::raw("types.name, type_id, round(sum(`holding`) * 100 / {$holdings}, 2) as value"))
+            ->select(DB::raw("types.name, type_id AS item_id, round(sum(`holding`) * 100 / {$holdings}, 2) as value"))
             ->groupBy('types.name', 'type_id')
             ->orderBy('type_id')
             ->get();
@@ -123,9 +125,11 @@ class StatisticController extends Controller
     public function calculatePortfolioYieldsBySectors() {
         $holdings = DB::table('assets')->sum('holding');
 
+        // Field set: "name", "item_id", "value"
+        // Using in the "horizontal" chart
         $percents = DB::table('assets')
             ->leftJoin('sectors', 'assets.sector_id', '=', 'sectors.id')
-            ->select(DB::raw("sectors.name, sector_id, round(sum(`holding`) / {$holdings}, 2) as value"))
+            ->select(DB::raw("sectors.name, sector_id AS item_id, round(sum(`holding`) / {$holdings}, 2) as value"))
             ->groupBy('sectors.name', 'sector_id')
             ->orderBy('sector_id')
             ->get();

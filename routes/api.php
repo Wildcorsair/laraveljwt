@@ -37,6 +37,7 @@ Route::post('contact/send', 'API\ContactController@sendMessage');
 Route::get('activation', 'API\PassportController@activate');
 Route::get('import-csv', 'API\CSVImportController@importCSV');
 Route::get('dashboard-common-statistic', 'API\StatisticController@getDashboardCommonStatistic');
+Route::get('assets-statistic', 'API\StatisticController@getAssetClassStats');
 Route::get('geo-statistic', 'API\StatisticController@getGeoStatistic');
 Route::get('sector-statistic', 'API\StatisticController@getSectorStatistic');
 
@@ -53,7 +54,6 @@ Route::group(['middleware' => ['auth:api', 'role:customer']], function() {
     Route::put('profile/{id}', 'API\ProfileController@update')->where(['id' => '[0-9]+']);
     // Statistic routes
     Route::get('dashboard-statistic', 'API\StatisticController@getDashboardStatistic');
-    Route::get('assets-statistic', 'API\StatisticController@getAssetClassStats');
 });
 
 Route::group(['middleware' => ['auth:api', 'role:administrator']], function() {
