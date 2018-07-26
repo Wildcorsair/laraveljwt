@@ -37,6 +37,8 @@ Route::post('contact/send', 'API\ContactController@sendMessage');
 Route::get('activation', 'API\PassportController@activate');
 Route::get('import-csv', 'API\CSVImportController@importCSV');
 Route::get('dashboard-common-statistic', 'API\StatisticController@getDashboardCommonStatistic');
+Route::get('geo-statistic', 'API\StatisticController@getGeoStatistic');
+Route::get('sector-statistic', 'API\StatisticController@getSectorStatistic');
 
 // Common statistic routes
 Route::get('prices', 'API\StatisticController@getPricesStatistic');

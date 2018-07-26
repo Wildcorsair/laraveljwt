@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Price;
 use App\Type;
+use App\Country;
+use App\Sector;
 
 class StatisticController extends Controller
 {
@@ -245,8 +247,8 @@ class StatisticController extends Controller
     }
 
     public function getAssetClassStats(Request $request) {
-        if (!$request->type) {
-            return false;
+        if (!$request->type || !is_numeric($request->type)) {
+            return response()->json(['success' => 'error', 'message' => 'No require parameter'], $this->badRequest);
         }
 
         $typeId = (int)$request->type;
@@ -255,7 +257,7 @@ class StatisticController extends Controller
 
         $holdings = DB::table('assets')->sum('holding');
 
-        $assets = DB::table('assets')
+        $statsData = DB::table('assets')
             ->leftJoin('sectors', 'assets.sector_id', '=', 'sectors.id')
             ->leftJoin('countries', 'assets.country_id', '=', 'countries.id')
             ->select(DB::raw('assets.name, countries.code AS code, sectors.name AS sector, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
@@ -265,12 +267,67 @@ class StatisticController extends Controller
 
 
         $common = DB::table('assets')
-            // ->leftJoin('sectors', 'assets.sector_id', '=', 'sectors.id')
-            // ->leftJoin('countries', 'assets.country_id', '=', 'countries.id')
             ->select(DB::raw('COUNT(assets.country_id) AS country_count, COUNT(assets.sector_id) AS sector_count, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
             ->where('type_id', $typeId)
             ->first();
 
-        return response()->json(['success' => 'ok', 'dataset' => ['type' => $assetClass, 'data' => $assets, 'common' => $common]], $this->sucessStatus);
+        return response()->json(['success' => 'ok', 'dataset' => ['type' => $assetClass, 'data' => $statsData, 'common' => $common]], $this->sucessStatus);
+    }
+
+    public function getGeoStatistic(Request $request) {
+        if (!$request->country) {
+            return response()->json(['success' => 'error', 'message' => 'No require parameter'], $this->badRequest);
+        }
+
+        $countryId = (int)$request->country;
+
+        $country = Country::find($countryId);
+
+        $holdings = DB::table('assets')->sum('holding');
+
+        $statsData = DB::table('assets')
+            ->leftJoin('sectors', 'assets.sector_id', '=', 'sectors.id')
+            ->leftJoin('countries', 'assets.country_id', '=', 'countries.id')
+            ->select(DB::raw('assets.name, countries.code AS code, sectors.name AS sector, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
+            ->where('country_id', $countryId)
+            ->groupBy('countries.code', 'sectors.name', 'assets.name')
+            ->get();
+
+
+        $common = DB::table('assets')
+            ->select(DB::raw('COUNT(assets.country_id) AS country_count, COUNT(assets.sector_id) AS sector_count, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
+            ->where('country_id', $countryId)
+            ->first();
+
+        return response()->json(['success' => 'ok', 'dataset' => ['type' => $country, 'data' => $statsData, 'common' => $common]], $this->sucessStatus);
+    }
+
+    public function getSectorStatistic(Request $request) {
+        if (!$request->sector) {
+            return response()->json(['success' => 'error', 'message' => 'No require parameter'], $this->badRequest);
+        }
+
+        $sectorId = (int)$request->sector;
+
+        $sector = Sector::find($sectorId);
+
+        $holdings = DB::table('assets')->sum('holding');
+
+        // Calculate separated statistic
+        $statsData = DB::table('assets')
+            ->leftJoin('sectors', 'assets.sector_id', '=', 'sectors.id')
+            ->leftJoin('countries', 'assets.country_id', '=', 'countries.id')
+            ->select(DB::raw('assets.name, countries.code AS code, sectors.name AS sector, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
+            ->where('sector_id', $sectorId)
+            ->groupBy('countries.code', 'sectors.name', 'assets.name')
+            ->get();
+
+        // Calculate total statistic
+        $common = DB::table('assets')
+            ->select(DB::raw('COUNT(assets.country_id) AS country_count, COUNT(assets.sector_id) AS sector_count, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
+            ->where('sector_id', $sectorId)
+            ->first();
+
+        return response()->json(['success' => 'ok', 'dataset' => ['type' => $sector, 'data' => $statsData, 'common' => $common]], $this->sucessStatus);
     }
 }
