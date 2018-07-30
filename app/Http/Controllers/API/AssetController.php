@@ -46,11 +46,15 @@ class AssetController extends Controller
         }
 
         $this->validate($request, [
-            'typeId' => 'required',
             'name' => 'required',
+            'ticker' => 'required',
             'holding' => 'required',
             'marketValue' => 'required',
+            'delta' => 'required',
             'profit' => 'required',
+            'returnCurrency' => 'required',
+            'returnPercent' => 'required',
+            'typeId' => 'required',
             'sectorId' => 'required',
             'tradingBlockId' => 'required',
             'countryId' => 'required'
@@ -63,9 +67,13 @@ class AssetController extends Controller
 
         $asset = new Asset();
         $asset->name = $request->get('name');
+        $asset->ticker = $request->get('ticker');
         $asset->holding = $request->get('holding');
         $asset->market_value = $request->get('marketValue');
+        $asset->delta = $request->get('delta');
         $asset->profit = $request->get('profit');
+        $asset->return_currency = $request->get('returnCurrency');
+        $asset->return_percent = $request->get('returnPercent');
 
         $asset->type()->associate($type);
         $asset->sector()->associate($sector);
@@ -92,11 +100,15 @@ class AssetController extends Controller
         }
 
         $this->validate($request, [
-            'typeId' => 'required',
             'name' => 'required',
+            'ticker' => 'required',
             'holding' => 'required',
             'marketValue' => 'required',
+            'delta' => 'required',
             'profit' => 'required',
+            'returnCurrency' => 'required',
+            'returnPercent' => 'required',
+            'typeId' => 'required',
             'sectorId' => 'required',
             'tradingBlockId' => 'required',
             'countryId' => 'required'
@@ -109,9 +121,13 @@ class AssetController extends Controller
 
         $asset = Asset::find($id);
         $asset->name = $request->get('name');
+        $asset->ticker = $request->get('ticker');
         $asset->holding = $request->get('holding');
         $asset->market_value = $request->get('marketValue');
+        $asset->delta = $request->get('delta');
         $asset->profit = $request->get('profit');
+        $asset->return_currency = $request->get('returnCurrency');
+        $asset->return_percent = $request->get('returnPercent');
 
         $asset->type()->associate($type);
         $asset->sector()->associate($sector);
