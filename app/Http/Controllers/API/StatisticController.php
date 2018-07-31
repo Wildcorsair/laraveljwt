@@ -273,7 +273,7 @@ class StatisticController extends Controller
 
 
         $common = DB::table('assets')
-            ->select(DB::raw('COUNT(assets.country_id) AS country_count, COUNT(assets.sector_id) AS sector_count, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
+            ->select(DB::raw('COUNT(assets.country_id) AS country_count, COUNT(assets.sector_id) AS sector_count, SUM(delta) AS delta, SUM(holding) AS holding, SUM(return_currency) AS return_currency, SUM(return_percent) AS return_percent, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
             ->where('type_id', $typeId)
             ->first();
 
@@ -294,14 +294,14 @@ class StatisticController extends Controller
         $statsData = DB::table('assets')
             ->leftJoin('sectors', 'assets.sector_id', '=', 'sectors.id')
             ->leftJoin('countries', 'assets.country_id', '=', 'countries.id')
-            ->select(DB::raw('assets.name, countries.code AS code, sectors.name AS sector, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
+            ->select(DB::raw('assets.name, ticker, SUM(delta) AS delta, SUM(return_currency) AS return_currency, SUM(return_percent) AS return_percent, countries.code AS code, sectors.name AS sector, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
             ->where('country_id', $countryId)
-            ->groupBy('countries.code', 'sectors.name', 'assets.name')
+            ->groupBy('countries.code', 'sectors.name', 'assets.name', 'ticker')
             ->get();
 
 
         $common = DB::table('assets')
-            ->select(DB::raw('COUNT(assets.country_id) AS country_count, COUNT(assets.sector_id) AS sector_count, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
+            ->select(DB::raw('COUNT(assets.country_id) AS country_count, COUNT(assets.sector_id) AS sector_count, SUM(delta) AS delta, SUM(return_currency) AS return_currency, SUM(return_percent) AS return_percent, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
             ->where('country_id', $countryId)
             ->first();
 
@@ -323,14 +323,14 @@ class StatisticController extends Controller
         $statsData = DB::table('assets')
             ->leftJoin('sectors', 'assets.sector_id', '=', 'sectors.id')
             ->leftJoin('countries', 'assets.country_id', '=', 'countries.id')
-            ->select(DB::raw('assets.name, countries.code AS code, sectors.name AS sector, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
+            ->select(DB::raw('assets.name, ticker, SUM(delta) AS delta, SUM(return_currency) AS return_currency, SUM(return_percent) AS return_percent, countries.code AS code, sectors.name AS sector, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
             ->where('sector_id', $sectorId)
-            ->groupBy('countries.code', 'sectors.name', 'assets.name')
+            ->groupBy('countries.code', 'sectors.name', 'assets.name', 'ticker')
             ->get();
 
         // Calculate total statistic
         $common = DB::table('assets')
-            ->select(DB::raw('COUNT(assets.country_id) AS country_count, COUNT(assets.sector_id) AS sector_count, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
+            ->select(DB::raw('COUNT(assets.country_id) AS country_count, COUNT(assets.sector_id) AS sector_count, SUM(delta) AS delta, SUM(return_currency) AS return_currency, SUM(return_percent) AS return_percent, SUM(holding) AS holding, ROUND(SUM(holding) * ' . env('MARKET_PRICE') . ', 2) AS market_value, round(sum(`holding`) * 100 / ' . $holdings . ', 2) as portfolio'))
             ->where('sector_id', $sectorId)
             ->first();
 
